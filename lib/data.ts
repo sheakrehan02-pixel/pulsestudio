@@ -1,0 +1,203 @@
+// Hardcoded lesson and skill data
+// In production, this would come from a database
+
+import { Skill, Lesson, SkillDomain } from "./types";
+
+export const SKILLS: Record<SkillDomain, Skill[]> = {
+  rhythm: [
+    {
+      id: "rhythm-1",
+      domain: "rhythm",
+      name: "Beat Perception",
+      description: "Feel the pulse",
+      icon: "🥁",
+      level: 45,
+      xpEarned: 450,
+      lessonsCompleted: 3,
+      unlocked: true,
+    },
+    {
+      id: "rhythm-2",
+      domain: "rhythm",
+      name: "Tempo Control",
+      description: "Master different speeds",
+      icon: "⏱️",
+      level: 20,
+      xpEarned: 200,
+      lessonsCompleted: 1,
+      unlocked: true,
+    },
+    {
+      id: "rhythm-3",
+      domain: "rhythm",
+      name: "Syncopation",
+      description: "Off-beat patterns",
+      icon: "🎵",
+      level: 0,
+      xpEarned: 0,
+      lessonsCompleted: 0,
+      unlocked: false,
+    },
+  ],
+  pitch: [
+    {
+      id: "pitch-1",
+      domain: "pitch",
+      name: "Pitch Matching",
+      description: "Match tones by ear",
+      icon: "🎯",
+      level: 30,
+      xpEarned: 300,
+      lessonsCompleted: 2,
+      unlocked: true,
+    },
+    {
+      id: "pitch-2",
+      domain: "pitch",
+      name: "Interval Recognition",
+      description: "Identify note distances",
+      icon: "📏",
+      level: 0,
+      xpEarned: 0,
+      lessonsCompleted: 0,
+      unlocked: false,
+    },
+  ],
+  notes: [
+    {
+      id: "notes-1",
+      domain: "notes",
+      name: "Note Names",
+      description: "Learn the alphabet of music",
+      icon: "🎼",
+      level: 60,
+      xpEarned: 600,
+      lessonsCompleted: 4,
+      unlocked: true,
+    },
+    {
+      id: "notes-2",
+      domain: "notes",
+      name: "Scales & Keys",
+      description: "Understand musical structure",
+      icon: "🔑",
+      level: 15,
+      xpEarned: 150,
+      lessonsCompleted: 1,
+      unlocked: true,
+    },
+  ],
+  instruments: [
+    {
+      id: "instruments-1",
+      domain: "instruments",
+      name: "Piano Basics",
+      description: "Explore the keyboard",
+      icon: "🎹",
+      level: 40,
+      xpEarned: 400,
+      lessonsCompleted: 2,
+      unlocked: true,
+    },
+    {
+      id: "instruments-2",
+      domain: "instruments",
+      name: "Rhythm Pads",
+      description: "Create beats",
+      icon: "🥁",
+      level: 0,
+      xpEarned: 0,
+      lessonsCompleted: 0,
+      unlocked: false,
+    },
+  ],
+  creativity: [
+    {
+      id: "creativity-1",
+      domain: "creativity",
+      name: "Free Play",
+      description: "Experiment freely",
+      icon: "🎨",
+      level: 25,
+      xpEarned: 250,
+      lessonsCompleted: 0, // Free play doesn't have lessons
+      unlocked: true,
+    },
+    {
+      id: "creativity-2",
+      domain: "creativity",
+      name: "Pattern Creation",
+      description: "Build your own rhythms",
+      icon: "✨",
+      level: 0,
+      xpEarned: 0,
+      lessonsCompleted: 0,
+      unlocked: false,
+    },
+  ],
+};
+
+export const LESSONS: Lesson[] = [
+  {
+    id: "lesson-rhythm-1",
+    skillId: "rhythm-1",
+    title: "Basic Beat",
+    description: "Tap along with the metronome",
+    difficulty: "beginner",
+    duration: 5,
+    xpReward: 50,
+    unlocked: true,
+    completed: true,
+  },
+  {
+    id: "lesson-rhythm-2",
+    skillId: "rhythm-1",
+    title: "Steady Tempo",
+    description: "Maintain consistent timing",
+    difficulty: "beginner",
+    duration: 5,
+    xpReward: 50,
+    unlocked: true,
+    completed: true,
+  },
+  {
+    id: "lesson-rhythm-3",
+    skillId: "rhythm-1",
+    title: "Advanced Timing",
+    description: "Master precision",
+    difficulty: "intermediate",
+    duration: 8,
+    xpReward: 100,
+    unlocked: true,
+    completed: false,
+  },
+];
+
+export const DOMAIN_INFO: Record<SkillDomain, { name: string; color: string; description: string }> = {
+  rhythm: {
+    name: "Rhythm & Timing",
+    color: "blue",
+    description: "Master the pulse of music",
+  },
+  pitch: {
+    name: "Pitch & Ear Training",
+    color: "purple",
+    description: "Develop your musical ear",
+  },
+  notes: {
+    name: "Notes & Theory",
+    color: "green",
+    description: "Understand musical language",
+  },
+  instruments: {
+    name: "Instrument Interaction",
+    color: "yellow",
+    description: "Explore different sounds",
+  },
+  creativity: {
+    name: "Creativity",
+    color: "pink",
+    description: "Express yourself musically",
+  },
+};
+

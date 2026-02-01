@@ -1,0 +1,11 @@
+{
+  "appId": "com.musiclab.app",
+  "appName": "Music Lab",
+  "webDir": "out",
+  "server": {
+    "androidScheme": "https"
+  },
+  "ios": {
+    "contentInset": "automatic"
+  }
+}
