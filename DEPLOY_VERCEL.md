@@ -58,5 +58,15 @@ The APK will be available at `https://your-project.vercel.app/downloads/MusicLab
 
 - **Framework:** Next.js (auto-detected)
 - **Build Command:** `next build` (default)
-- **Output Directory:** `out` (static export)
+- **Output Directory:** Leave empty (Next.js handles it)
 - **Node.js:** 18.x or 20.x (Vercel default)
+
+## Troubleshooting 404
+
+If you see **404: NOT_FOUND** after deploy:
+
+1. **Framework Preset** – In Vercel → Project Settings → General → Framework Preset must be **Next.js**. If it's "Other", change it to Next.js and redeploy.
+
+2. **Output Directory** – In Project Settings → Build & Development Settings, leave **Output Directory** empty. Do not set it to `dist`, `.next`, or anything else.
+
+3. **Redeploy** – Push the latest code (includes `trailingSlash: true` fix) and trigger a new deployment.
