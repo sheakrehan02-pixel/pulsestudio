@@ -190,3 +190,4 @@ This app is built to:
 ## 📝 License
 
 Built with ❤️ for music education.
+# pulsestudio
