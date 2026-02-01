@@ -65,8 +65,11 @@ The APK will be available at `https://your-project.vercel.app/downloads/MusicLab
 
 If you see **404: NOT_FOUND** after deploy:
 
-1. **Framework Preset** – In Vercel → Project Settings → General → Framework Preset must be **Next.js**. If it's "Other", change it to Next.js and redeploy.
+1. **Framework Preset** – In Vercel → Project Settings → General → **Framework Preset** → select **Other** (not Next.js). This uses the explicit `buildCommand` and `outputDirectory: "out"` from `vercel.json`.
 
-2. **Output Directory** – In Project Settings → Build & Development Settings, leave **Output Directory** empty. Do not set it to `dist`, `.next`, or anything else.
+2. **Build settings** – In Project Settings → Build & Development Settings, ensure:
+   - **Build Command:** `npm run build` (or leave empty; vercel.json provides it)
+   - **Output Directory:** `out` (vercel.json provides this)
+   - **Install Command:** `npm install` (default)
 
-3. **Redeploy** – Push the latest code (includes `trailingSlash: true` fix) and trigger a new deployment.
+3. **Redeploy** – Trigger a new deployment (Redeploy from Vercel dashboard or push a new commit).
