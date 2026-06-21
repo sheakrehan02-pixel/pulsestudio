@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { playPianoNote } from "@/lib/audio";
+import { LabIcon } from "@/components/icons";
 
 // Piano key frequencies (C4 to C5, one octave)
 const PIANO_KEYS = [
@@ -96,7 +97,7 @@ export default function PianoPage() {
             <div>
               <p className="text-gray-300 mb-4">
                 {foundMiddleC
-                  ? "🎉 You found Middle C! Great job!"
+                  ? "You found Middle C! Great job!"
                   : "Click keys to hear different notes"}
               </p>
               <motion.button
@@ -110,8 +111,9 @@ export default function PianoPage() {
             </div>
           ) : (
             <div>
-              <p className="text-xl text-yellow-400 mb-2">
-                🎯 Find Middle C (C4)
+              <p className="text-xl text-yellow-400 mb-2 flex items-center justify-center gap-2">
+                <LabIcon id="target" size={22} />
+                Find Middle C (C4)
               </p>
               <p className="text-gray-400 text-sm">
                 Click the white key that plays Middle C

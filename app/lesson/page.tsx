@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { playClickSound, playSuccessSound, playErrorSound } from "@/lib/audio";
+import { LabIcon } from "@/components/icons";
 import { DifficultyLevel, RhythmLessonConfig } from "@/lib/types";
 
 type TapAccuracy = "perfect" | "close" | "off" | null;
@@ -104,7 +105,7 @@ export default function LessonPage() {
       setScore((prev) => prev + 10);
       setStreak((prev) => prev + 1);
       void playSuccessSound();
-      setMessage("Perfect timing! 🎯");
+      setMessage("Perfect timing!");
     } else if (timeSinceLastBeat < closeWindow) {
       accuracy = "close";
       setScore((prev) => prev + 5);
@@ -137,7 +138,7 @@ export default function LessonPage() {
         setIsActive(false);
         const accuracyRate = (taps.filter(t => t.accuracy === "perfect").length / config.targetTaps) * 100;
         if (accuracyRate >= 80) {
-          setMessage("Excellent! You've mastered this level! 🎉");
+          setMessage("Excellent! You've mastered this level!");
         } else if (accuracyRate >= 60) {
           setMessage("Good job! Keep practicing to improve.");
         } else {
@@ -232,10 +233,11 @@ export default function LessonPage() {
                     }
                   `}
                 >
-                  <div className="text-3xl mb-2">
-                    {level === "beginner" && "🌱"}
-                    {level === "intermediate" && "⚡"}
-                    {level === "advanced" && "🔥"}
+                  <div className="mb-2 flex justify-center">
+                    <LabIcon
+                      id={level === "beginner" ? "leaf" : level === "intermediate" ? "zap" : "flame"}
+                      size={28}
+                    />
                   </div>
                   <h3 className="text-xl font-bold mb-2 capitalize">{level}</h3>
                   <div className="text-sm space-y-1 opacity-80">

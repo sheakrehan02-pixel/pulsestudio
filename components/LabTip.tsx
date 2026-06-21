@@ -13,17 +13,27 @@ export default function LabTip({ title, tips, defaultOpen = false }: LabTipProps
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-2xl border border-blue-500/20 overflow-hidden">
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{
+        background: "var(--accent-teal-soft)",
+        border: "1px solid rgba(90, 154, 142, 0.3)",
+      }}
+    >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+        className="w-full px-4 py-3 flex items-center justify-between text-left transition-colors hover:bg-white/5"
       >
-        <span className="text-sm font-semibold text-blue-300 flex items-center gap-2">
-          💡 {title}
+        <span
+          className="text-sm font-semibold flex items-center gap-2"
+          style={{ color: "var(--accent-teal)" }}
+        >
+          {title}
         </span>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
-          className="text-gray-400 text-lg"
+          className="text-lg"
+          style={{ color: "var(--text-muted)" }}
         >
           ▼
         </motion.span>
@@ -38,8 +48,17 @@ export default function LabTip({ title, tips, defaultOpen = false }: LabTipProps
           >
             <ul className="px-4 pb-4 space-y-2">
               {tips.map((tip, i) => (
-                <li key={i} className="text-sm text-gray-400 flex items-start gap-2">
-                  <span className="text-blue-400 mt-0.5">•</span>
+                <li
+                  key={i}
+                  className="text-sm flex items-start gap-2"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  <span
+                    className="mt-0.5"
+                    style={{ color: "var(--accent-teal)" }}
+                  >
+                    •
+                  </span>
                   {tip}
                 </li>
               ))}

@@ -137,10 +137,10 @@ export default function CreativityLab({ lab }: CreativityLabProps) {
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-display font-semibold" style={{ color: "var(--text-primary)" }}>
             {lab.name}
           </h1>
-          <p className="text-gray-500 text-sm mt-1">No rules. Just sound.</p>
+          <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>No rules. Just sound.</p>
         </motion.div>
 
         {/* Instrument selector */}
@@ -151,11 +151,12 @@ export default function CreativityLab({ lab }: CreativityLabProps) {
               onClick={() => setInstrument(inst)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`px-4 py-2 rounded-xl text-sm font-medium capitalize ${
-                instrument === inst
-                  ? "bg-purple-500/40 text-purple-200 border border-purple-500/50"
-                  : "bg-gray-800 text-gray-500"
-              }`}
+              className="px-4 py-2 rounded-xl text-sm font-medium capitalize"
+              style={{
+                background: instrument === inst ? "var(--accent-coral-soft)" : "var(--bg-elevated)",
+                color: instrument === inst ? "var(--accent-coral)" : "var(--text-muted)",
+                border: instrument === inst ? "1px solid var(--border-warm)" : undefined,
+              }}
             >
               {inst}
             </motion.button>
@@ -172,7 +173,8 @@ export default function CreativityLab({ lab }: CreativityLabProps) {
             <motion.div
               key={i}
               layout
-              className="w-3 rounded-t bg-gradient-to-t from-purple-600 to-pink-500"
+              className="w-3 rounded-t"
+              style={{ background: "linear-gradient(to top, var(--accent-coral), var(--accent-amber))" }}
               animate={{ height: `${Math.max(4, h)}%` }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
             />
@@ -231,13 +233,15 @@ export default function CreativityLab({ lab }: CreativityLabProps) {
             <motion.button
               onClick={playBack}
               disabled={isPlayingBack}
-              className="px-5 py-2 rounded-xl bg-purple-500/40 text-purple-200 font-medium disabled:opacity-50"
+              className="px-5 py-2 rounded-xl font-medium disabled:opacity-50"
+              style={{ background: "var(--accent-coral-soft)", color: "var(--accent-coral)" }}
             >
               ▶ Play Back
             </motion.button>
             <motion.button
               onClick={clearHistory}
-              className="px-5 py-2 rounded-xl bg-gray-800 text-gray-400"
+              className="px-5 py-2 rounded-xl"
+              style={{ background: "var(--bg-elevated)", color: "var(--text-muted)" }}
             >
               Clear
             </motion.button>
@@ -254,9 +258,11 @@ export default function CreativityLab({ lab }: CreativityLabProps) {
                 key={i}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className={`px-2 py-0.5 rounded text-xs ${
-                  playbackIndex === origIdx ? "bg-purple-500/50" : "bg-gray-800 text-gray-500"
-                }`}
+                className="px-2 py-0.5 rounded text-xs"
+                style={{
+                  background: playbackIndex === origIdx ? "var(--accent-coral-soft)" : "var(--bg-elevated)",
+                  color: playbackIndex === origIdx ? "var(--accent-coral)" : "var(--text-muted)",
+                }}
               >
                 {item.note}
               </motion.span>

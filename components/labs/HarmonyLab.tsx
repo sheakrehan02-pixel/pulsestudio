@@ -13,13 +13,13 @@ interface HarmonyLabProps {
 type Mood = "happy" | "chill" | "epic" | "mystery";
 
 const CHORDS: Record<string, { name: string; notes: number[]; color: string }> = {
-  I: { name: "C", notes: [261.63, 329.63, 392], color: "from-blue-500 to-cyan-500" },
-  ii: { name: "Dm", notes: [293.66, 349.23, 440], color: "from-slate-500 to-slate-600" },
-  iii: { name: "Em", notes: [329.63, 392, 493.88], color: "from-emerald-600 to-teal-600" },
-  IV: { name: "F", notes: [349.23, 440, 523.25], color: "from-green-500 to-emerald-500" },
-  V: { name: "G", notes: [392, 493.88, 587.33], color: "from-amber-500 to-orange-500" },
-  vi: { name: "Am", notes: [220, 261.63, 329.63], color: "from-purple-500 to-pink-500" },
-  viio: { name: "Bº", notes: [246.94, 293.66, 349.23], color: "from-rose-600 to-red-600" },
+  I: { name: "C", notes: [261.63, 329.63, 392], color: "from-[#5a9a8e] to-[#4a8578]" },
+  ii: { name: "Dm", notes: [293.66, 349.23, 440], color: "from-[#5a9a8e] to-[#4a7c7e]" },
+  iii: { name: "Em", notes: [329.63, 392, 493.88], color: "from-[#6ab09a] to-[#5a9a8e]" },
+  IV: { name: "F", notes: [349.23, 440, 523.25], color: "from-[#e8b84a] to-[#d4a43a]" },
+  V: { name: "G", notes: [392, 493.88, 587.33], color: "from-[#e69a80] to-[#d4856a]" },
+  vi: { name: "Am", notes: [220, 261.63, 329.63], color: "from-[#d4856a] to-[#c27458]" },
+  viio: { name: "Bº", notes: [246.94, 293.66, 349.23], color: "from-[#c27458] to-[#a85a45]" },
 };
 
 const MOOD_PROGRESSIONS: Record<Mood, string[]> = {
@@ -98,10 +98,10 @@ export default function HarmonyLab({ lab }: HarmonyLabProps) {
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-400 via-rose-400 to-orange-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-display font-semibold" style={{ color: "var(--text-primary)" }}>
             {lab.name}
           </h1>
-          <p className="text-gray-500 text-sm mt-1">Build chord progressions</p>
+          <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>Build chord progressions</p>
         </motion.div>
 
         {/* Mood presets */}
@@ -112,7 +112,8 @@ export default function HarmonyLab({ lab }: HarmonyLabProps) {
               onClick={() => loadMood(m)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-4 py-2 rounded-xl bg-gray-900/80 text-gray-300 text-sm capitalize hover:bg-gray-800"
+              className="px-4 py-2 rounded-xl text-sm capitalize transition-colors"
+              style={{ background: "var(--bg-elevated)", color: "var(--text-secondary)" }}
             >
               {m}
             </motion.button>
@@ -135,8 +136,8 @@ export default function HarmonyLab({ lab }: HarmonyLabProps) {
                 onClick={() => playChord(roman, i)}
                 whileHover={{ scale: 1.03, y: -4 }}
                 whileTap={{ scale: 0.97 }}
-                className={`relative p-6 rounded-2xl bg-gradient-to-br ${chord?.color ?? "from-gray-600 to-gray-700"} text-white font-bold text-xl ${
-                  isPlaying ? "ring-4 ring-amber-400 ring-offset-2 ring-offset-gray-900" : ""
+                className={`relative p-6 rounded-2xl bg-gradient-to-br ${chord?.color ?? "from-[#4a5a5c] to-[#3a4a4c]"} text-white font-bold text-xl ${
+                  isPlaying ? "ring-4 ring-[var(--accent-amber)] ring-offset-2 ring-offset-[var(--bg-deep)]" : ""
                 }`}
               >
                 {roman}
@@ -151,7 +152,8 @@ export default function HarmonyLab({ lab }: HarmonyLabProps) {
             <button
               key={i}
               onClick={() => cycleChord(i)}
-              className="w-8 h-8 rounded-lg bg-gray-800 text-gray-400 text-sm hover:bg-gray-700"
+              className="w-8 h-8 rounded-lg text-sm transition-colors"
+              style={{ background: "var(--bg-elevated)", color: "var(--text-muted)" }}
             >
               ↻
             </button>
@@ -163,7 +165,8 @@ export default function HarmonyLab({ lab }: HarmonyLabProps) {
           onClick={isLooping ? stopLoop : playProgression}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="w-full py-4 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold text-lg"
+            className="w-full py-4 rounded-xl text-white font-bold text-lg"
+            style={{ background: "linear-gradient(135deg, var(--accent-coral), #c27458)" }}
         >
           {isLooping ? "⏹ Stop Loop" : "▶ Play Progression"}
         </motion.button>

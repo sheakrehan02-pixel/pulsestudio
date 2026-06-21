@@ -30,33 +30,48 @@ export default function DownloadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] flex flex-col items-center justify-center p-4">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center p-4"
+      style={{ background: "var(--bg-deep)" }}
+    >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="max-w-2xl w-full space-y-8"
       >
         <div className="text-center">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+          <h1
+            className="text-4xl md:text-5xl font-display font-semibold mb-4"
+            style={{ color: "var(--text-primary)" }}
+          >
             Get Music Lab
           </h1>
-          <p className="text-gray-400">
+          <p style={{ color: "var(--text-secondary)" }}>
             Use in browser or install for the best experience
           </p>
         </div>
 
         <div className="space-y-6">
-          {/* Use in browser */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gray-900/60 rounded-2xl p-6 border border-gray-800"
+            className="rounded-xl p-6"
+            style={{
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border-subtle)",
+            }}
           >
-            <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
-              <span>🌐</span> Use in Browser
+            <h2
+              className="text-xl font-semibold mb-2 flex items-center gap-2 font-display"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Use in Browser
             </h2>
-            <p className="text-gray-400 text-sm mb-4">
+            <p
+              className="text-sm mb-4"
+              style={{ color: "var(--text-secondary)" }}
+            >
               No download needed. Open Music Lab directly in your browser.
             </p>
             <motion.button
@@ -66,85 +81,140 @@ export default function DownloadPage() {
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl"
+              className="w-full py-4 text-white font-semibold rounded-xl"
+              style={{
+                background:
+                  "linear-gradient(135deg, var(--accent-teal), #4a8578)",
+              }}
             >
               Open Music Lab →
             </motion.button>
           </motion.div>
 
-          {/* Install PWA (desktop) */}
           {isInstallable && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-blue-500/10 rounded-2xl p-6 border border-blue-500/30"
+              className="rounded-xl p-6"
+              style={{
+                background: "var(--accent-teal-soft)",
+                border: "1px solid rgba(90, 154, 142, 0.35)",
+              }}
             >
-              <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
-                <span>📱</span> Install App
+              <h2
+                className="text-xl font-semibold mb-2 flex items-center gap-2 font-display"
+                style={{ color: "var(--accent-teal)" }}
+              >
+                Install App
               </h2>
-              <p className="text-gray-400 text-sm mb-4">
+              <p
+                className="text-sm mb-4"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 Add Music Lab to your device for a full app experience.
               </p>
               <motion.button
                 onClick={handleInstall}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-blue-600 text-white font-semibold rounded-xl"
+                className="w-full py-4 text-white font-semibold rounded-xl"
+                style={{ background: "var(--accent-teal)" }}
               >
                 Install Music Lab
               </motion.button>
             </motion.div>
           )}
 
-          {/* Add to Home Screen (mobile) */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gray-900/60 rounded-2xl p-6 border border-gray-800"
+            className="rounded-xl p-6"
+            style={{
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border-subtle)",
+            }}
           >
-            <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
-              <span>📲</span> Add to Home Screen (Mobile)
+            <h2
+              className="text-xl font-semibold mb-2 flex items-center gap-2 font-display"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Add to Home Screen (Mobile)
             </h2>
-            <p className="text-gray-400 text-sm mb-4">
+            <p
+              className="text-sm mb-4"
+              style={{ color: "var(--text-secondary)" }}
+            >
               On your phone, tap Share → Add to Home Screen to install.
             </p>
-            <div className="space-y-3 text-sm text-gray-500">
-              <p><strong className="text-gray-400">iPhone:</strong> Safari → Share icon → Add to Home Screen</p>
-              <p><strong className="text-gray-400">Android:</strong> Chrome → Menu (⋮) → Add to Home screen</p>
+            <div
+              className="space-y-3 text-sm"
+              style={{ color: "var(--text-muted)" }}
+            >
+              <p>
+                <strong style={{ color: "var(--text-secondary)" }}>
+                  iPhone:
+                </strong>{" "}
+                Safari → Share icon → Add to Home Screen
+              </p>
+              <p>
+                <strong style={{ color: "var(--text-secondary)" }}>
+                  Android:
+                </strong>{" "}
+                Chrome → Menu (⋮) → Add to Home screen
+              </p>
             </div>
           </motion.div>
 
-          {/* Download APK */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-gray-900/60 rounded-2xl p-6 border border-gray-800"
+            className="rounded-xl p-6"
+            style={{
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border-subtle)",
+            }}
           >
-            <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
-              <span>🤖</span> Download for Android
+            <h2
+              className="text-xl font-semibold mb-2 flex items-center gap-2 font-display"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Download for Android
             </h2>
-            <p className="text-gray-400 text-sm mb-4">
+            <p
+              className="text-sm mb-4"
+              style={{ color: "var(--text-secondary)" }}
+            >
               Get the Android APK for offline use.
             </p>
             <a
               href="/downloads/MusicLab.apk"
               download="MusicLab.apk"
               onClick={() => void playClickSound()}
-              className="block w-full py-4 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-xl text-center transition-colors"
+              className="block w-full py-4 font-semibold rounded-xl text-center transition-colors"
+              style={{
+                background: "var(--accent-coral-soft)",
+                border: "1px solid var(--border-warm)",
+                color: "var(--accent-coral)",
+              }}
             >
               Download APK
             </a>
-            <p className="text-xs text-gray-500 mt-2">
-              If the link doesn&apos;t work, the APK may not be built yet. Use &quot;Add to Home Screen&quot; instead.
+            <p
+              className="text-xs mt-2"
+              style={{ color: "var(--text-muted)" }}
+            >
+              If the link doesn&apos;t work, the APK may not be built yet. Use
+              &quot;Add to Home Screen&quot; instead.
             </p>
           </motion.div>
         </div>
 
         <motion.button
           onClick={() => router.push("/")}
-          className="text-gray-500 hover:text-gray-400 text-sm"
+          className="text-sm transition-colors"
+          style={{ color: "var(--text-muted)" }}
         >
           ← Back to Home
         </motion.button>

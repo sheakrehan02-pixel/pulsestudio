@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { motion } from "framer-motion";
-import { playPianoNote, playClickSound, playKick, playSnare, playHiHat } from "@/lib/audio";
+import { motion, AnimatePresence } from "framer-motion";
+import { playPianoNote, playClickSound, playKick, playSnare, playHiHat, playSuccessSound, playErrorSound } from "@/lib/audio";
 import { useLabActivity } from "@/components/LabSessionContext";
+import { recordLabQuizScore } from "@/lib/sessionProgress";
 import type { Lab } from "@/lib/labs";
 
 interface PatternLabProps {
@@ -11,12 +12,13 @@ interface PatternLabProps {
 }
 
 type RowType = "kick" | "snare" | "hat" | "melody";
+type Mode = "build" | "challenge";
 
 const ROWS: { type: RowType; label: string; color: string; play: () => void }[] = [
-  { type: "kick", label: "Kick", color: "from-amber-600 to-orange-600", play: () => void playKick() },
-  { type: "snare", label: "Snare", color: "from-rose-600 to-pink-600", play: () => void playSnare() },
-  { type: "hat", label: "Hi-Hat", color: "from-cyan-600 to-blue-600", play: () => void playHiHat() },
-  { type: "melody", label: "Melody", color: "from-violet-600 to-purple-600", play: () => {} },
+  { type: "kick", label: "Kick", color: "from-[#e8b84a] to-[#d4a43a]", play: () => void playKick() },
+  { type: "snare", label: "Snare", color: "from-[#d4856a] to-[#c27458]", play: () => void playSnare() },
+  { type: "hat", label: "Hi-Hat", color: "from-[#5a9a8e] to-[#4a8578]", play: () => void playHiHat() },
+  { type: "melody", label: "Melody", color: "from-[#d4856a] to-[#c27458]", play: () => {} },
 ];
 
 const MELODY_NOTES = [261.63, 293.66, 329.63, 349.23, 392, 440, 493.88, 523.25];
@@ -70,14 +72,33 @@ function playRow(rowIndex: number, beatIndex: number) {
   }
 }
 
+function patternsMatch(a: boolean[][], b: boolean[][]): boolean {
+  for (let r = 0; r < a.length; r++) {
+    for (let c = 0; c < BEATS; c++) {
+      if (!!a[r]?.[c] !== !!b[r]?.[c]) return false;
+    }
+  }
+  return true;
+}
+
 export default function PatternLab({ lab }: PatternLabProps) {
   const recordActivity = useLabActivity();
+  const [mode, setMode] = useState<Mode>("build");
   const [pattern, setPattern] = useState<boolean[][]>(
     ROWS.map(() => Array(BEATS).fill(false))
   );
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentBeat, setCurrentBeat] = useState(-1);
+  const [bpm, setBpm] = useState(120);
   const isPlayingRef = useRef(false);
+
+  const [challengeTarget, setChallengeTarget] = useState<boolean[][] | null>(null);
+  const [challengeName, setChallengeName] = useState("");
+  const [challengeResult, setChallengeResult] = useState<"correct" | "wrong" | null>(null);
+  const [challengeScore, setChallengeScore] = useState(0);
+  const [challengeRound, setChallengeRound] = useState(0);
+
+  const beatInterval = (60 / bpm) * 1000 / 4;
 
   const toggleCell = useCallback((rowIndex: number, beatIndex: number) => {
     recordActivity?.(1);
@@ -88,7 +109,7 @@ export default function PatternLab({ lab }: PatternLabProps) {
       );
       return next;
     });
-    if (!pattern[rowIndex]![beatIndex]) {
+    if (!pattern[rowIndex]?.[beatIndex]) {
       playRow(rowIndex, beatIndex);
     }
   }, [pattern, recordActivity]);
@@ -98,42 +119,70 @@ export default function PatternLab({ lab }: PatternLabProps) {
     setPattern(preset.pattern.map((r) => [...r]));
   }, []);
 
-  const playPattern = useCallback(() => {
+  const playPattern = useCallback((pat = pattern) => {
     if (isPlayingRef.current) {
       isPlayingRef.current = false;
+      setIsPlaying(false);
+      setCurrentBeat(-1);
       return;
     }
     isPlayingRef.current = true;
     setIsPlaying(true);
+    recordActivity?.(1);
 
-    const interval = 125;
     let beat = 0;
     const loop = () => {
       if (!isPlayingRef.current) return;
       const bi = beat % BEATS;
       setCurrentBeat(bi);
-
-      const p = pattern;
-      p.forEach((row, ri) => {
+      pat.forEach((row, ri) => {
         if (row[bi]) playRow(ri, bi);
       });
-
       beat++;
-      if (isPlayingRef.current) {
-        setTimeout(loop, interval);
-      } else {
-        setCurrentBeat(-1);
-        setIsPlaying(false);
-      }
+      setTimeout(loop, beatInterval);
     };
     loop();
-  }, [pattern]);
+  }, [pattern, beatInterval, recordActivity]);
 
-  const stopPattern = useCallback(() => {
-    isPlayingRef.current = false;
-    setIsPlaying(false);
-    setCurrentBeat(-1);
-  }, []);
+  const startChallenge = useCallback(() => {
+    setMode("challenge");
+    setChallengeScore(0);
+    setChallengeRound(0);
+    const preset = PRESETS[Math.floor(Math.random() * PRESETS.length)]!;
+    setChallengeTarget(preset.pattern.map((r) => [...r]));
+    setChallengeName(preset.name);
+    setPattern(ROWS.map(() => Array(BEATS).fill(false)));
+    setChallengeResult(null);
+    setTimeout(() => playPattern(preset.pattern.map((r) => [...r])), 500);
+  }, [playPattern]);
+
+  const checkChallenge = useCallback(() => {
+    if (!challengeTarget) return;
+    recordActivity?.(1);
+    const correct = patternsMatch(pattern, challengeTarget);
+    setChallengeResult(correct ? "correct" : "wrong");
+
+    if (correct) {
+      const newScore = challengeScore + 20;
+      setChallengeScore(newScore);
+      void playSuccessSound();
+      const nextRound = challengeRound + 1;
+      setChallengeRound(nextRound);
+      if (nextRound >= 3) {
+        recordLabQuizScore("pattern", Math.min(100, 50 + newScore));
+      }
+      setTimeout(() => {
+        const preset = PRESETS[Math.floor(Math.random() * PRESETS.length)]!;
+        setChallengeTarget(preset.pattern.map((r) => [...r]));
+        setChallengeName(preset.name);
+        setPattern(ROWS.map(() => Array(BEATS).fill(false)));
+        setChallengeResult(null);
+        setTimeout(() => playPattern(preset.pattern.map((r) => [...r])), 400);
+      }, 1500);
+    } else {
+      void playErrorSound();
+    }
+  }, [challengeTarget, pattern, challengeScore, challengeRound, recordActivity, playPattern]);
 
   const clearPattern = useCallback(() => {
     void playClickSound(300, 0.04);
@@ -143,48 +192,83 @@ export default function PatternLab({ lab }: PatternLabProps) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 pb-24">
       <div className="max-w-2xl w-full space-y-6">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 bg-clip-text text-transparent">
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+          <h1 className="text-3xl font-display font-semibold" style={{ color: "var(--text-primary)" }}>
             {lab.name}
           </h1>
-          <p className="text-gray-500 text-sm mt-1">Build beats like a producer</p>
+          <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
+            Build beats like a producer — or match patterns in challenge mode
+          </p>
         </motion.div>
 
-        {/* Presets */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-wrap gap-2"
-        >
-          {PRESETS.map((preset) => (
+        <div className="flex gap-2 justify-center">
+          {(["build", "challenge"] as Mode[]).map((m) => (
             <motion.button
-              key={preset.name}
-              onClick={() => loadPreset(preset)}
-              whileHover={{ scale: 1.03 }}
+              key={m}
+              onClick={() => (m === "challenge" ? startChallenge() : setMode("build"))}
               whileTap={{ scale: 0.97 }}
-              className="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 text-xs font-medium hover:bg-gray-700"
+              className="px-4 py-2 rounded-full text-sm font-medium capitalize"
+              style={{
+                background: mode === m ? "var(--accent-amber)" : "var(--bg-elevated)",
+                color: mode === m ? "white" : "var(--text-secondary)",
+                border: "1px solid var(--border-subtle)",
+              }}
             >
-              {preset.name}
+              {m === "build" ? "Build" : "Challenge"}
             </motion.button>
           ))}
-        </motion.div>
+        </div>
 
-        {/* Sequencer */}
+        {mode === "build" && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-wrap gap-2">
+            {PRESETS.map((preset) => (
+              <motion.button
+                key={preset.name}
+                onClick={() => loadPreset(preset)}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium"
+                style={{ background: "var(--bg-elevated)", color: "var(--text-secondary)" }}
+              >
+                {preset.name}
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
+
+        {mode === "challenge" && challengeTarget && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl p-4 text-center"
+            style={{ background: "var(--accent-amber-soft)", border: "1px solid rgba(232,184,74,0.3)" }}
+          >
+            <div className="text-sm font-medium" style={{ color: "var(--accent-amber)" }}>
+              Round {Math.min(challengeRound + 1, 3)}/3 · Score: {challengeScore}
+            </div>
+            <p className="text-xs mt-1" style={{ color: "var(--text-secondary)" }}>
+              Listen to &quot;{challengeName}&quot; then recreate it on the grid
+            </p>
+            <button
+              onClick={() => playPattern(challengeTarget.map((r) => [...r]))}
+              className="mt-2 text-xs underline"
+              style={{ color: "var(--accent-amber)" }}
+            >
+              Replay pattern
+            </button>
+          </motion.div>
+        )}
+
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gray-900/80 rounded-2xl p-4 border border-gray-800 overflow-x-auto"
+          className="rounded-2xl p-4 overflow-x-auto"
+          style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
         >
           <div className="min-w-[520px] space-y-2">
             {ROWS.map((row, rowIndex) => (
               <div key={row.type} className="flex items-center gap-2">
-                <div
-                  className={`w-14 h-10 rounded-lg bg-gradient-to-r ${row.color} flex items-center justify-center text-white text-xs font-bold shrink-0`}
-                >
+                <div className={`w-14 h-10 rounded-lg bg-gradient-to-r ${row.color} flex items-center justify-center text-white text-xs font-bold shrink-0`}>
                   {row.label}
                 </div>
                 <div className="flex gap-1 flex-1">
@@ -195,19 +279,10 @@ export default function PatternLab({ lab }: PatternLabProps) {
                       whileHover={{ scale: 1.08 }}
                       whileTap={{ scale: 0.92 }}
                       className={`relative h-10 flex-1 min-w-0 rounded-md transition-all ${
-                        pattern[rowIndex]?.[beatIndex]
-                          ? `bg-gradient-to-r ${row.color}`
-                          : "bg-gray-800 hover:bg-gray-750"
-                      } ${currentBeat === beatIndex && isPlaying ? "ring-2 ring-amber-400 ring-offset-1 ring-offset-gray-900" : ""}`}
-                    >
-                      {currentBeat === beatIndex && isPlaying && (
-                        <motion.div
-                          layoutId="playhead"
-                          className="absolute inset-0 rounded-md bg-amber-400/20"
-                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                        />
-                      )}
-                    </motion.button>
+                        pattern[rowIndex]?.[beatIndex] ? `bg-gradient-to-r ${row.color}` : ""
+                      } ${currentBeat === beatIndex && isPlaying ? "ring-2 ring-[var(--accent-amber)]" : ""}`}
+                      style={{ background: !pattern[rowIndex]?.[beatIndex] ? "var(--bg-surface)" : undefined }}
+                    />
                   ))}
                 </div>
               </div>
@@ -215,39 +290,73 @@ export default function PatternLab({ lab }: PatternLabProps) {
           </div>
         </motion.div>
 
-        {/* Beat numbers */}
-        <div className="flex gap-1 min-w-[520px] px-[4.5rem]">
-          {Array.from({ length: BEATS }).map((_, i) => (
-            <div
-              key={i}
-              className={`flex-1 text-center text-[10px] ${
-                (i + 1) % 4 === 1 ? "text-amber-400" : "text-gray-600"
-              }`}
-            >
-              {(i % 4) + 1}
-            </div>
-          ))}
+        <div className="space-y-2">
+          <div className="flex justify-between text-xs" style={{ color: "var(--text-muted)" }}>
+            <span>BPM: {bpm}</span>
+            <span>{Math.round(beatInterval)}ms per step</span>
+          </div>
+          <input
+            type="range"
+            min={60}
+            max={180}
+            value={bpm}
+            onChange={(e) => setBpm(Number(e.target.value))}
+            className="w-full accent-[var(--accent-amber)]"
+          />
         </div>
 
-        {/* Controls */}
-        <div className="flex gap-3 justify-center">
-          <motion.button
-            onClick={() => (isPlaying ? stopPattern() : playPattern())}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold flex items-center gap-2"
-          >
-            {isPlaying ? "⏹ Stop" : "▶ Play"}
-          </motion.button>
-          <motion.button
-            onClick={clearPattern}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-6 py-3 rounded-xl bg-gray-800 text-gray-300 font-medium"
-          >
-            Clear
-          </motion.button>
+        <div className="flex gap-3 justify-center flex-wrap">
+          {mode === "build" ? (
+            <>
+              <motion.button
+                onClick={() => playPattern()}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 rounded-xl text-white font-bold"
+                style={{ background: "linear-gradient(135deg, var(--accent-amber), #d4a43a)" }}
+              >
+                {isPlaying ? "⏹ Stop" : "▶ Play"}
+              </motion.button>
+              <motion.button
+                onClick={clearPattern}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-3 rounded-xl font-medium"
+                style={{ background: "var(--bg-elevated)", color: "var(--text-secondary)" }}
+              >
+                Clear
+              </motion.button>
+            </>
+          ) : (
+            <motion.button
+              onClick={checkChallenge}
+              disabled={challengeResult !== null}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-3 rounded-xl text-white font-bold"
+              style={{ background: "linear-gradient(135deg, var(--accent-teal), #4a8578)" }}
+            >
+              Check Pattern
+            </motion.button>
+          )}
         </div>
+
+        <AnimatePresence>
+          {challengeResult && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center text-sm font-medium"
+              style={{ color: challengeResult === "correct" ? "var(--accent-teal)" : "var(--accent-coral)" }}
+            >
+              {challengeResult === "correct"
+                ? challengeRound >= 3
+                  ? "Challenge complete! Great ear for patterns."
+                  : "Perfect match! Next round..."
+                : "Not quite — listen again and adjust"}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

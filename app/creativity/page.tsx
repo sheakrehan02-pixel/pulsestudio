@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { playPianoNote } from "@/lib/audio";
+import { LabIcon } from "@/components/icons";
 
 // Piano key frequencies (C3 to C5, two octaves for more creativity)
 const PIANO_KEYS = [
@@ -107,8 +108,9 @@ export default function CreativityPage() {
           transition={{ delay: 0.2 }}
           className="bg-gradient-to-r from-pink-600/20 to-purple-600/20 rounded-2xl p-6 backdrop-blur-sm border border-pink-500/30 text-center"
         >
-          <p className="text-gray-300 mb-2">
-            🎨 This is your musical playground. Experiment, explore, and create.
+          <p className="text-gray-300 mb-2 flex items-center justify-center gap-2">
+            <LabIcon id="palette" size={18} className="text-pink-400 shrink-0" />
+            This is your musical playground. Experiment, explore, and create.
           </p>
           <p className="text-sm text-gray-400">
             Click keys or use keyboard: A S D F G H J K L (white keys)

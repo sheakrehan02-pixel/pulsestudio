@@ -9,6 +9,12 @@ import SoundDesignLab from "@/components/labs/SoundDesignLab";
 import PatternLab from "@/components/labs/PatternLab";
 import HarmonyLab from "@/components/labs/HarmonyLab";
 import CreativityLab from "@/components/labs/CreativityLab";
+import TempoLab from "@/components/labs/TempoLab";
+import IntervalLab from "@/components/labs/IntervalLab";
+import DynamicsLab from "@/components/labs/DynamicsLab";
+import MemoryLab from "@/components/labs/MemoryLab";
+import ScalesLab from "@/components/labs/ScalesLab";
+import GrooveLab from "@/components/labs/GrooveLab";
 import LabTip from "@/components/LabTip";
 import type { LabId } from "@/lib/labs";
 
@@ -61,6 +67,54 @@ const LAB_TIPS: Record<string, { title: string; tips: string[] }> = {
       "Record and playback your creations",
     ],
   },
+  tempo: {
+    title: "Tempo Lab Tips",
+    tips: [
+      "Listen to the metronome first, then tap to match",
+      "Start slow (60–80 BPM) and work up to faster tempos",
+      "Compare tempos side-by-side to feel the difference",
+    ],
+  },
+  intervals: {
+    title: "Interval Lab Tips",
+    tips: [
+      "Listen to both notes — the distance between them is the interval",
+      "Major 3rd sounds happy; minor 3rd sounds darker",
+      "Perfect 5th is the 'power chord' interval",
+    ],
+  },
+  dynamics: {
+    title: "Dynamics Lab Tips",
+    tips: [
+      "pp = very soft, ff = very loud — feel the volume difference",
+      "Crescendo means gradually getting louder",
+      "Dynamics add emotion and expression to music",
+    ],
+  },
+  memory: {
+    title: "Memory Lab Tips",
+    tips: [
+      "Listen carefully to the full sequence before tapping",
+      "Start with short sequences and build up",
+      "Hum the melody in your head to help remember",
+    ],
+  },
+  scales: {
+    title: "Scales Lab Tips",
+    tips: [
+      "Major scales sound bright and happy; minor scales sound darker",
+      "Pentatonic scales use 5 notes — great for melodies",
+      "Try Quiz Mode to train your ear to identify scales",
+    ],
+  },
+  groove: {
+    title: "Groove Lab Tips",
+    tips: [
+      "Straight grooves have even timing — rock and pop",
+      "Swing grooves have a long-short feel — jazz and blues",
+      "Syncopated grooves emphasize off-beats — reggae and funk",
+    ],
+  },
 };
 
 interface LabPageClientProps {
@@ -86,6 +140,12 @@ export default function LabPageClient({ labId }: LabPageClientProps) {
     pattern: PatternLab,
     harmony: HarmonyLab,
     creativity: CreativityLab,
+    tempo: TempoLab,
+    intervals: IntervalLab,
+    dynamics: DynamicsLab,
+    memory: MemoryLab,
+    scales: ScalesLab,
+    groove: GrooveLab,
   }[labId];
 
   if (!LabComponent) {
@@ -100,10 +160,21 @@ export default function LabPageClient({ labId }: LabPageClientProps) {
 
   return (
     <LabSessionProvider labId={labId as LabId}>
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] relative">
+      <div
+        className="min-h-screen relative"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(90, 154, 142, 0.04) 0%, transparent 50%), var(--bg-deep)",
+        }}
+      >
         <button
           onClick={() => router.push("/labs")}
-          className="absolute top-4 left-4 z-50 px-4 py-2 bg-gray-900/80 backdrop-blur-sm rounded-full text-white hover:bg-gray-800 transition-colors"
+          className="absolute top-4 left-4 z-50 px-4 py-2 rounded-full backdrop-blur-sm transition-colors"
+          style={{
+            background: "var(--bg-elevated)",
+            border: "1px solid var(--border-subtle)",
+            color: "var(--text-secondary)",
+          }}
         >
           ← Back to Labs
         </button>

@@ -123,10 +123,10 @@ export default function SoundDesignLab({ lab }: SoundDesignLabProps) {
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-display font-semibold" style={{ color: "var(--text-primary)" }}>
             {lab.name}
           </h1>
-          <p className="text-gray-500 text-sm mt-1">Shape sound from scratch</p>
+          <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>Shape sound from scratch</p>
         </motion.div>
 
         {/* Presets */}
@@ -141,10 +141,14 @@ export default function SoundDesignLab({ lab }: SoundDesignLabProps) {
               onClick={() => loadPreset(preset)}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
-              className="p-3 rounded-xl bg-gray-900/80 border border-gray-800 text-left hover:border-emerald-500/30"
+              className="p-3 rounded-xl text-left transition-colors"
+              style={{
+                background: "var(--bg-elevated)",
+                border: "1px solid var(--border-subtle)",
+              }}
             >
-              <div className="font-medium text-sm text-emerald-300">{preset.name}</div>
-              <div className="text-xs text-gray-500">{preset.desc}</div>
+              <div className="font-medium text-sm" style={{ color: "var(--accent-teal)" }}>{preset.name}</div>
+              <div className="text-xs" style={{ color: "var(--text-muted)" }}>{preset.desc}</div>
             </motion.button>
           ))}
         </motion.div>
@@ -153,9 +157,13 @@ export default function SoundDesignLab({ lab }: SoundDesignLabProps) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-gray-900/80 rounded-2xl p-6 border border-gray-800"
+          className="rounded-2xl p-6"
+          style={{
+            background: "var(--bg-elevated)",
+            border: "1px solid var(--border-subtle)",
+          }}
         >
-          <div className="text-xs text-gray-500 mb-2">Waveform</div>
+          <div className="text-xs mb-2" style={{ color: "var(--text-muted)" }}>Waveform</div>
           <svg viewBox="0 0 100 100" className="w-full h-32">
             <motion.polyline
               points={waveformPoints.map((p) => `${p.x},${p.y}`).join(" ")}
@@ -177,8 +185,8 @@ export default function SoundDesignLab({ lab }: SoundDesignLabProps) {
         <div className="space-y-4">
           <div>
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-500">Frequency</span>
-              <span className="text-emerald-400 font-mono">{frequency} Hz</span>
+              <span style={{ color: "var(--text-muted)" }}>Frequency</span>
+              <span className="font-mono" style={{ color: "var(--accent-teal)" }}>{frequency} Hz</span>
             </div>
             <input
               type="range"
@@ -186,14 +194,15 @@ export default function SoundDesignLab({ lab }: SoundDesignLabProps) {
               max="2000"
               value={frequency}
               onChange={(e) => setFrequency(Number(e.target.value))}
-              className="w-full h-2 bg-gray-800 rounded-full accent-emerald-500"
+              className="w-full h-2 rounded-full"
+              style={{ background: "var(--bg-surface)" }}
             />
           </div>
 
           <div>
             <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-500">Detune</span>
-              <span className="text-emerald-400 font-mono">{detune}¢</span>
+              <span style={{ color: "var(--text-muted)" }}>Detune</span>
+              <span className="font-mono" style={{ color: "var(--accent-teal)" }}>{detune}¢</span>
             </div>
             <input
               type="range"
@@ -201,12 +210,13 @@ export default function SoundDesignLab({ lab }: SoundDesignLabProps) {
               max="50"
               value={detune}
               onChange={(e) => setDetune(Number(e.target.value))}
-              className="w-full h-2 bg-gray-800 rounded-full accent-emerald-500"
+              className="w-full h-2 rounded-full"
+              style={{ background: "var(--bg-surface)" }}
             />
           </div>
 
           <div>
-            <div className="text-sm text-gray-500 mb-2">Wave Type</div>
+            <div className="text-sm mb-2" style={{ color: "var(--text-muted)" }}>Wave Type</div>
             <div className="grid grid-cols-4 gap-2">
               {(["sine", "square", "sawtooth", "triangle"] as WaveType[]).map((w) => (
                 <motion.button
@@ -214,11 +224,12 @@ export default function SoundDesignLab({ lab }: SoundDesignLabProps) {
                   onClick={() => setWaveType(w)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`py-2 rounded-lg text-xs font-medium capitalize ${
-                    waveType === w
-                      ? "bg-emerald-500/30 text-emerald-300 border border-emerald-500/50"
-                      : "bg-gray-800 text-gray-500"
-                  }`}
+                  className="py-2 rounded-lg text-xs font-medium capitalize"
+                  style={{
+                    background: waveType === w ? "var(--accent-teal-soft)" : "var(--bg-elevated)",
+                    color: waveType === w ? "var(--accent-teal)" : "var(--text-muted)",
+                    border: waveType === w ? "1px solid rgba(90, 154, 142, 0.4)" : undefined,
+                  }}
                 >
                   {w}
                 </motion.button>
@@ -230,7 +241,8 @@ export default function SoundDesignLab({ lab }: SoundDesignLabProps) {
             onClick={togglePlay}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg"
+            className="w-full py-4 rounded-xl text-white font-bold text-lg"
+            style={{ background: "linear-gradient(135deg, var(--accent-teal), #4a8578)" }}
           >
             {isPlaying ? "🔊 Playing..." : "▶ Play Sound"}
           </motion.button>

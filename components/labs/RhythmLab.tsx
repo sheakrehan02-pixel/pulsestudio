@@ -164,7 +164,8 @@ export default function RhythmLab({ lab }: RhythmLabProps) {
               animate={{ scale: 3, opacity: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.6 }}
-              className="absolute w-4 h-4 rounded-full bg-cyan-400"
+              className="absolute w-4 h-4 rounded-full"
+              style={{ background: "var(--accent-teal)" }}
             />
           ))}
         </AnimatePresence>
@@ -176,17 +177,18 @@ export default function RhythmLab({ lab }: RhythmLabProps) {
           animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl md:text-4xl font-display font-semibold text-[var(--text-primary)]">
             {lab.name}
           </h1>
-          <p className="text-gray-500 text-sm mt-1">{lab.description}</p>
+          <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>{lab.description}</p>
         </motion.div>
 
         {/* Mode toggle */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="flex gap-2 p-1 bg-gray-900/80 rounded-xl"
+          className="flex gap-2 p-1 rounded-xl"
+          style={{ background: "var(--bg-elevated)" }}
         >
           {(["free", "copy"] as const).map((m) => (
             <button
@@ -195,9 +197,8 @@ export default function RhythmLab({ lab }: RhythmLabProps) {
                 setMode(m);
                 if (m === "free") setCopyPattern(null);
               }}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-                mode === m ? "bg-cyan-500/30 text-cyan-300" : "text-gray-500"
-              }`}
+              className="flex-1 py-2 rounded-lg text-sm font-medium transition-all"
+              style={mode === m ? { background: "var(--accent-teal-soft)", color: "var(--accent-teal)" } : { color: "var(--text-muted)" }}
             >
               {m === "free" ? "Free Tap" : "Copy Rhythm"}
             </button>
@@ -216,7 +217,8 @@ export default function RhythmLab({ lab }: RhythmLabProps) {
                 onClick={() => startCopyMode(pattern)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-3 py-2 bg-gray-800 rounded-lg text-xs text-gray-300 hover:bg-gray-700"
+                className="px-3 py-2 rounded-lg text-xs transition-colors"
+                style={{ background: "var(--bg-surface)", color: "var(--text-secondary)" }}
               >
                 {name}
               </motion.button>
@@ -233,8 +235,8 @@ export default function RhythmLab({ lab }: RhythmLabProps) {
           {[1, 2, 3, 4].map((r) => (
             <motion.div
               key={r}
-              className="absolute inset-0 rounded-full border-2 border-cyan-500/30"
-              style={{ padding: `${r * 12}%` }}
+              className="absolute inset-0 rounded-full border-2"
+              style={{ borderColor: "rgba(90, 154, 142, 0.35)", padding: `${r * 12}%` }}
               animate={
                 isActive
                   ? {
@@ -250,15 +252,16 @@ export default function RhythmLab({ lab }: RhythmLabProps) {
             onClick={handleTap}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.96 }}
-            className={`absolute inset-[20%] rounded-full flex flex-col items-center justify-center font-bold text-lg transition-colors ${
+            className="absolute inset-[20%] rounded-full flex flex-col items-center justify-center font-bold text-lg transition-colors"
+            style={
               accuracy === "perfect"
-                ? "bg-emerald-500/80"
+                ? { background: "var(--accent-teal)", opacity: 0.9 }
                 : accuracy === "close"
-                  ? "bg-amber-500/80"
+                  ? { background: "var(--accent-amber)", opacity: 0.9 }
                   : accuracy === "off"
-                    ? "bg-red-500/50"
-                    : "bg-gradient-to-br from-blue-500 to-cyan-500"
-            }`}
+                    ? { background: "var(--accent-coral)", opacity: 0.7 }
+                    : { background: "linear-gradient(135deg, var(--accent-teal), #4a8578)" }
+            }
           >
             {isActive ? "TAP" : "START"}
             {streak >= 3 && (
@@ -281,25 +284,27 @@ export default function RhythmLab({ lab }: RhythmLabProps) {
               void playClickSound(500, 0.03);
               setBpm((b) => Math.max(60, b - 10));
             }}
-            className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-xl"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-xl"
+            style={{ background: "var(--bg-elevated)" }}
           >
             −
           </motion.button>
-          <span className="text-2xl font-mono tabular-nums text-cyan-400 w-16 text-center">{bpm}</span>
+          <span className="text-2xl font-mono tabular-nums w-16 text-center" style={{ color: "var(--accent-teal)" }}>{bpm}</span>
           <motion.button
             onClick={(e) => {
               e.stopPropagation();
               void playClickSound(500, 0.03);
               setBpm((b) => Math.min(180, b + 10));
             }}
-            className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-xl"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-xl"
+            style={{ background: "var(--bg-elevated)" }}
           >
             +
           </motion.button>
-          <span className="text-gray-500 text-sm">BPM</span>
+          <span className="text-sm" style={{ color: "var(--text-muted)" }}>BPM</span>
         </div>
 
-        <p className="text-center text-gray-600 text-xs">
+        <p className="text-center text-xs" style={{ color: "var(--text-muted)" }}>
           Space to tap · {taps.length} taps
         </p>
       </div>

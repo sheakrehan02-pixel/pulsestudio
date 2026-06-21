@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { SkillDomain, Skill } from "@/lib/types";
 import { SKILLS, DOMAIN_INFO } from "@/lib/data";
+import { LabIcon } from "@/components/icons";
 import { getUserProgress, calculateLevel, xpProgressInLevel } from "@/lib/progress";
 import { playClickSound } from "@/lib/audio";
 
@@ -47,7 +48,7 @@ export default function DashboardPage() {
               <p className="text-gray-400">Level {progress.level}</p>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-yellow-400">{progress.streak} 🔥</div>
+              <div className="text-2xl font-bold text-yellow-400 flex items-center gap-1">{progress.streak} <LabIcon id="flame" size={22} /></div>
               <p className="text-sm text-gray-400">Day Streak</p>
             </div>
           </div>
@@ -91,7 +92,9 @@ export default function DashboardPage() {
                   <h2 className="text-2xl font-bold mb-1">{domainInfo.name}</h2>
                   <p className="text-sm text-gray-400">{domainInfo.description}</p>
                 </div>
-                <div className="text-3xl">{domainSkills[0]?.icon || "🎵"}</div>
+                <div className="flex items-center">
+                <LabIcon id={(domainSkills[0]?.icon as string) || "music"} size={28} />
+              </div>
               </div>
 
               {/* Skills Grid */}
@@ -125,11 +128,15 @@ export default function DashboardPage() {
                       `}
                     >
                       {!isUnlocked && (
-                        <div className="absolute top-2 right-2 text-gray-500">🔒</div>
+                        <div className="absolute top-2 right-2 text-gray-500">
+                          <LabIcon id="lock" size={18} />
+                        </div>
                       )}
                       
                       <div className="flex items-start justify-between mb-2">
-                        <div className="text-2xl">{skill.icon}</div>
+                        <div className="flex items-center">
+                        <LabIcon id={skill.icon as string} size={24} />
+                      </div>
                         {isUnlocked && (
                           <div className="text-xs font-semibold text-gray-400">
                             Lv. {skill.level}

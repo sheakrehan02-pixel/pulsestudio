@@ -204,3 +204,69 @@ export async function playHiHat() {
   noise.stop(now + 0.05);
 }
 
+export async function playWaveNote(
+  frequency: number,
+  waveType: OscillatorType = "sine",
+  duration = 0.4,
+  volume = 0.25
+) {
+  const ctx = await initAudioContext();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.frequency.value = frequency;
+  osc.type = waveType;
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(volume, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+  osc.start(now);
+  osc.stop(now + duration);
+}
+
+export async function playMetronomeBeats(bpm: number, count: number, onBeat?: (i: number) => void) {
+  const interval = (60 / bpm) * 1000;
+  for (let i = 0; i < count; i++) {
+    await new Promise<void>((resolve) => {
+      setTimeout(() => {
+        onBeat?.(i);
+        void playClickSound(i === 0 ? 1000 : 800, 0.08);
+        resolve();
+      }, i === 0 ? 0 : interval);
+    });
+  }
+}
+
+export async function playNoteSequence(
+  frequencies: number[],
+  gapMs = 400,
+  playFn: (f: number) => Promise<void> = playPianoNote
+) {
+  for (let i = 0; i < frequencies.length; i++) {
+    if (i > 0) await new Promise((r) => setTimeout(r, gapMs));
+    await playFn(frequencies[i]!);
+  }
+}
+
+export async function playDynamicNote(
+  frequency: number,
+  startVolume: number,
+  endVolume: number,
+  duration = 1.2
+) {
+  const ctx = await initAudioContext();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.frequency.value = frequency;
+  osc.type = "sine";
+  gain.gain.setValueAtTime(startVolume, now);
+  gain.gain.linearRampToValueAtTime(endVolume, now + duration);
+  gain.gain.linearRampToValueAtTime(0.001, now + duration + 0.05);
+  osc.start(now);
+  osc.stop(now + duration + 0.1);
+}
+

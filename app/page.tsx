@@ -1,35 +1,98 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import FloatingNotes from "@/components/FloatingNotes";
+import AmbientBackground from "@/components/AmbientBackground";
 import { playClickSound } from "@/lib/audio";
+import { needsPretest, needsWeeklyCheck, getSessionData } from "@/lib/sessionProgress";
+import { LabIcon } from "@/components/icons";
+import { SOUND_ARCHETYPES } from "@/lib/soundIdentity";
 
 export default function LandingPage() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  const [showPretestBanner, setShowPretestBanner] = useState(false);
+  const [showWeeklyBanner, setShowWeeklyBanner] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setShowPretestBanner(needsPretest());
+    setShowWeeklyBanner(needsWeeklyCheck());
+  }, []);
 
   const handleStart = () => {
     void playClickSound();
-    router.push("/labs");
+    if (needsPretest()) {
+      router.push("/assessment");
+    } else {
+      router.push("/studio");
+    }
   };
 
+  const data = mounted ? getSessionData() : null;
+  const identity = data?.soundIdentity ? SOUND_ARCHETYPES[data.soundIdentity] : null;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] flex items-center justify-center relative overflow-hidden">
-      {/* Animated background notes */}
+    <div
+      className="min-h-screen flex items-center justify-center relative overflow-hidden"
+      style={{ background: "var(--bg-deep)" }}
+    >
+      <AmbientBackground variant="home" />
       <FloatingNotes />
 
-      {/* Main content */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="text-center z-10 px-4"
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        className="text-center z-10 px-6 max-w-2xl"
       >
-        <motion.h1
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
+        {mounted && showPretestBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 px-4 py-3 rounded-2xl text-sm"
+            style={{
+              background: "var(--accent-teal-soft)",
+              border: "1px solid rgba(90, 154, 142, 0.35)",
+              color: "var(--accent-teal)",
+            }}
+          >
+            New here? Discover your Sound Identity with the skill pretest
+          </motion.div>
+        )}
+
+        {mounted && showWeeklyBanner && !showPretestBanner && (
+          <motion.button
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={() => router.push("/weekly-check")}
+            className="mb-6 w-full px-4 py-3 rounded-2xl text-sm font-medium"
+            style={{
+              background: "var(--accent-amber-soft)",
+              border: "1px solid rgba(232, 184, 74, 0.35)",
+              color: "var(--accent-amber)",
+            }}
+          >
+            Weekly progress check is ready — see how you&apos;ve improved
+          </motion.button>
+        )}
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent"
+          className="text-sm uppercase tracking-[0.2em] text-[var(--text-muted)] mb-6 font-medium"
+        >
+          {identity ? identity.tagline : "Learn through play"}
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="text-6xl md:text-8xl font-display font-semibold mb-6 text-[var(--text-primary)] tracking-tight"
         >
           Music Lab
         </motion.h1>
@@ -37,76 +100,120 @@ export default function LandingPage() {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="text-xl md:text-2xl text-gray-400 mb-12 max-w-2xl mx-auto"
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="text-lg md:text-xl text-[var(--text-secondary)] mb-8 leading-relaxed"
         >
-          Explore sound, experiment with music, learn through play
+          {identity ? (
+            <>
+              You are <span style={{ color: identity.accent }}>{identity.title}</span>.
+              <br />
+              Your studio session is ready.
+            </>
+          ) : (
+            <>
+              Explore sound with your ears and hands.
+              <br />
+              12 interactive labs. Your unique Sound Identity awaits.
+            </>
+          )}
         </motion.p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+        {data && data.pretestComplete && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.55 }}
+            className="inline-flex items-center gap-3 px-5 py-2 rounded-full mb-8 text-sm"
+            style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-subtle)" }}
+          >
+            <span style={{ color: "var(--accent-teal)" }}>Lv.{data.level}</span>
+            <span className="text-[var(--text-muted)]">•</span>
+            <span style={{ color: "var(--accent-amber)" }} className="flex items-center gap-1">
+              {data.streak}<LabIcon id="flame" size={14} />
+            </span>
+            <span className="text-[var(--text-muted)]">•</span>
+            <span style={{ color: "var(--accent-coral)" }}>{data.seasonXP} season XP</span>
+          </motion.div>
+        )}
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            transition={{ delay: 0.65, duration: 0.6 }}
+            whileHover={{ scale: 1.03, boxShadow: "0 8px 32px rgba(90, 154, 142, 0.45)" }}
+            whileTap={{ scale: 0.97 }}
             onClick={handleStart}
-            className="px-12 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xl font-semibold rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 relative overflow-hidden group"
+            className="px-12 py-4 rounded-full text-lg font-semibold text-white transition-all duration-300 animate-glow-pulse studio-enter-btn"
+            style={{
+              background: `linear-gradient(135deg, var(--accent-teal) 0%, #4a8578 100%)`,
+              boxShadow: "0 4px 24px rgba(90, 154, 142, 0.35)",
+            }}
           >
-            <span className="relative z-10">Enter the Lab</span>
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"
-              initial={false}
-            />
+            {showPretestBanner ? "Discover Your Sound Identity" : "Start Studio Session"}
           </motion.button>
           <motion.button
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            transition={{ delay: 0.75, duration: 0.6 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => {
               void playClickSound();
-              router.push("/download");
+              router.push("/labs");
             }}
-            className="px-12 py-4 bg-gray-800/80 text-white text-xl font-semibold rounded-full border border-gray-600 hover:border-gray-500 transition-all"
+            className="px-12 py-4 rounded-full text-lg font-semibold transition-all duration-300 border"
+            style={{
+              background: "var(--bg-elevated)",
+              borderColor: "var(--border-warm)",
+              color: "var(--text-secondary)",
+            }}
           >
-            📥 Download / Install
+            Explore Labs
           </motion.button>
         </div>
 
-        {/* Quick Navigation */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="flex gap-4 justify-center flex-wrap"
+          transition={{ delay: 0.9, duration: 0.6 }}
+          className="flex gap-3 justify-center flex-wrap"
         >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              void playClickSound();
-              router.push("/piano");
-            }}
-            className="px-6 py-2 bg-gray-800/50 text-gray-300 text-sm font-medium rounded-full border border-gray-700 hover:border-gray-600 transition-colors"
-          >
-            🎹 Piano
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              void playClickSound();
-              router.push("/progress");
-            }}
-            className="px-6 py-2 bg-gray-800/50 text-gray-300 text-sm font-medium rounded-full border border-gray-700 hover:border-gray-600 transition-colors"
-          >
-            📊 Progress
-          </motion.button>
+          {[
+            { label: "Studio", path: "/studio", style: "teal" as const },
+            { label: "Pretest", path: "/assessment", style: "amber" as const },
+            { label: "Progress", path: "/progress", style: "coral" as const },
+          ].map((btn) => (
+            <motion.button
+              key={btn.path}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                void playClickSound();
+                router.push(btn.path);
+              }}
+              className="px-5 py-2.5 rounded-full text-sm font-medium transition-colors"
+              style={{
+                background:
+                  btn.style === "teal"
+                    ? "var(--accent-teal-soft)"
+                    : btn.style === "amber"
+                      ? "var(--accent-amber-soft)"
+                      : "var(--accent-coral-soft)",
+                color:
+                  btn.style === "teal"
+                    ? "var(--accent-teal)"
+                    : btn.style === "amber"
+                      ? "var(--accent-amber)"
+                      : "var(--accent-coral)",
+                border: "1px solid var(--border-subtle)",
+              }}
+            >
+              {btn.label}
+            </motion.button>
+          ))}
         </motion.div>
       </motion.div>
     </div>
   );
 }
-

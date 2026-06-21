@@ -1,13 +1,19 @@
 // Music Lab architecture
-// Each lab teaches music through interactive exploration
+// Nature-inspired color palette: teal (sky/water), coral (flower petal), amber (honey/center)
 
-export type LabId = 
-  | "rhythm" 
-  | "pitch" 
-  | "sound-design" 
-  | "pattern" 
-  | "harmony" 
-  | "creativity";
+export type LabId =
+  | "rhythm"
+  | "pitch"
+  | "sound-design"
+  | "pattern"
+  | "harmony"
+  | "creativity"
+  | "tempo"
+  | "intervals"
+  | "dynamics"
+  | "memory"
+  | "scales"
+  | "groove";
 
 export interface Lab {
   id: LabId;
@@ -25,9 +31,9 @@ export const LABS: Lab[] = [
     id: "rhythm",
     name: "Rhythm Lab",
     description: "Feel the pulse, master the beat",
-    icon: "🥁",
-    color: "blue",
-    gradient: "from-blue-500 to-cyan-500",
+    icon: "drum",
+    color: "teal",
+    gradient: "from-[#5a9a8e] to-[#4a8578]",
     unlocked: true,
     category: "rhythm",
   },
@@ -35,9 +41,9 @@ export const LABS: Lab[] = [
     id: "pitch",
     name: "Pitch & Melody Lab",
     description: "Explore tones and melodies",
-    icon: "🎵",
-    color: "purple",
-    gradient: "from-purple-500 to-pink-500",
+    icon: "music",
+    color: "coral",
+    gradient: "from-[#d4856a] to-[#c27458]",
     unlocked: true,
     category: "pitch",
   },
@@ -45,9 +51,9 @@ export const LABS: Lab[] = [
     id: "sound-design",
     name: "Sound Design Lab",
     description: "Create and shape sounds",
-    icon: "🎛️",
-    color: "green",
-    gradient: "from-green-500 to-emerald-500",
+    icon: "sliders",
+    color: "amber",
+    gradient: "from-[#e8b84a] to-[#d4a43a]",
     unlocked: true,
     category: "sound",
   },
@@ -55,9 +61,9 @@ export const LABS: Lab[] = [
     id: "pattern",
     name: "Pattern Lab",
     description: "Build music like LEGO blocks",
-    icon: "🧩",
-    color: "yellow",
-    gradient: "from-yellow-500 to-orange-500",
+    icon: "blocks",
+    color: "teal",
+    gradient: "from-[#5a9a8e] to-[#6ab09a]",
     unlocked: true,
     category: "structure",
   },
@@ -65,9 +71,9 @@ export const LABS: Lab[] = [
     id: "harmony",
     name: "Harmony Lab",
     description: "Discover chords and harmony",
-    icon: "🎼",
-    color: "pink",
-    gradient: "from-pink-500 to-rose-500",
+    icon: "music2",
+    color: "coral",
+    gradient: "from-[#d4856a] to-[#e69a80]",
     unlocked: true,
     category: "harmony",
   },
@@ -75,11 +81,71 @@ export const LABS: Lab[] = [
     id: "creativity",
     name: "Creativity Sandbox",
     description: "Pure exploration, no rules",
-    icon: "🎨",
-    color: "indigo",
-    gradient: "from-indigo-500 to-purple-500",
+    icon: "palette",
+    color: "amber",
+    gradient: "from-[#e8b84a] via-[#d4856a] to-[#5a9a8e]",
     unlocked: true,
     category: "creativity",
+  },
+  {
+    id: "tempo",
+    name: "Tempo Lab",
+    description: "Feel speed changes and master BPM",
+    icon: "timer",
+    color: "teal",
+    gradient: "from-[#4a8578] to-[#5a9a8e]",
+    unlocked: true,
+    category: "rhythm",
+  },
+  {
+    id: "intervals",
+    name: "Interval Lab",
+    description: "Train your ear on note distances",
+    icon: "ruler",
+    color: "coral",
+    gradient: "from-[#c27458] to-[#d4856a]",
+    unlocked: true,
+    category: "pitch",
+  },
+  {
+    id: "dynamics",
+    name: "Dynamics Lab",
+    description: "Shape volume, expression, and feel",
+    icon: "zap",
+    color: "amber",
+    gradient: "from-[#d4a43a] to-[#e8b84a]",
+    unlocked: true,
+    category: "sound",
+  },
+  {
+    id: "memory",
+    name: "Memory Lab",
+    description: "Remember and replay melodies",
+    icon: "sparkles",
+    color: "coral",
+    gradient: "from-[#d4856a] via-[#e8b84a] to-[#5a9a8e]",
+    unlocked: true,
+    category: "creativity",
+  },
+  {
+    id: "scales",
+    name: "Scales Lab",
+    description: "Master major, minor, and pentatonic scales",
+    icon: "key",
+    color: "coral",
+    gradient: "from-[#d4856a] to-[#e69a80]",
+    unlocked: true,
+    category: "pitch",
+  },
+  {
+    id: "groove",
+    name: "Groove Lab",
+    description: "Feel swing, syncopation, and pocket",
+    icon: "party",
+    color: "teal",
+    gradient: "from-[#4a8578] to-[#6ab09a]",
+    unlocked: true,
+    category: "rhythm",
   },
 ];
 
@@ -96,15 +162,15 @@ export function generateAIFeedback(
 ): AIFeedback {
   const messages = {
     excellent: [
-      "Perfect timing! 🎯",
-      "You're getting it! ✨",
-      "That sounded great! 🎵",
-      "Keep going! 🔥",
+      "Perfect timing!",
+      "You're getting it!",
+      "That sounded great!",
+      "Keep going!",
     ],
     good: [
-      "Almost there! Try again",
-      "Close! Listen carefully",
-      "Good try! A little adjustment",
+      "Almost there — try again",
+      "Close — listen carefully",
+      "Good try — a little adjustment",
       "You're on the right track",
     ],
     "needs-improvement": [
@@ -115,15 +181,17 @@ export function generateAIFeedback(
     ],
   };
 
-  const type = 
-    performance === "excellent" ? "celebration" :
-    performance === "good" ? "hint" :
-    "correction";
+  const type =
+    performance === "excellent"
+      ? "celebration"
+      : performance === "good"
+        ? "hint"
+        : "correction";
 
   return {
     type,
-    message: messages[performance][Math.floor(Math.random() * messages[performance].length)],
+    message:
+      messages[performance][Math.floor(Math.random() * messages[performance].length)],
     timestamp: Date.now(),
   };
 }
-
